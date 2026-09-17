@@ -32,37 +32,42 @@ enum RobotState {
 };
 RobotState current_state = EXPLORATION_TO_CENTER;
 
+// PWM helper for ESP32 Arduino Core 2.x and 3.x compatibility
+void setMotorSpeed(uint8_t left_pwm, uint8_t right_pwm) {
+#if defined(ESP_ARDUINO_VERSION_MAJOR) && ESP_ARDUINO_VERSION_MAJOR >= 3
+    ledcWrite(PIN_MOTOR_L_PWM, left_pwm);
+    ledcWrite(PIN_MOTOR_R_PWM, right_pwm);
+#else
+    ledcWrite(0, left_pwm);
+    ledcWrite(1, right_pwm);
+#endif
+}
+
 // Low-level motor primitives
 void motorDriveForward() {
     digitalWrite(PIN_MOTOR_L_DIR, HIGH);
     digitalWrite(PIN_MOTOR_R_DIR, HIGH);
-    ledcWrite(0, 180); // Speed calibration
-    ledcWrite(1, 180);
+    setMotorSpeed(180, 180); // Speed calibration
     delay(280); // Wheel encoder tick duration per cell
-    ledcWrite(0, 0);
-    ledcWrite(1, 0);
+    setMotorSpeed(0, 0);
     delay(50);
 }
 
 void motorTurnRight90() {
     digitalWrite(PIN_MOTOR_L_DIR, HIGH);
     digitalWrite(PIN_MOTOR_R_DIR, LOW);
-    ledcWrite(0, 150);
-    ledcWrite(1, 150);
+    setMotorSpeed(150, 150);
     delay(140);
-    ledcWrite(0, 0);
-    ledcWrite(1, 0);
+    setMotorSpeed(0, 0);
     delay(50);
 }
 
 void motorTurnLeft90() {
     digitalWrite(PIN_MOTOR_L_DIR, LOW);
     digitalWrite(PIN_MOTOR_R_DIR, HIGH);
-    ledcWrite(0, 150);
-    ledcWrite(1, 150);
+    setMotorSpeed(150, 150);
     delay(140);
-    ledcWrite(0, 0);
-    ledcWrite(1, 0);
+    setMotorSpeed(0, 0);
     delay(50);
 }
 
@@ -88,6 +93,16 @@ void setup() {
     Serial.begin(115200);
     pinMode(PIN_MOTOR_L_DIR, OUTPUT);
     pinMode(PIN_MOTOR_R_DIR, OUTPUT);
+
+#if defined(ESP_ARDUINO_VERSION_MAJOR) && ESP_ARDUINO_VERSION_MAJOR >= 3
+    ledcAttach(PIN_MOTOR_L_PWM, 5000, 8);
+    ledcAttach(PIN_MOTOR_R_PWM, 5000, 8);
+#else
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(PIN_MOTOR_L_PWM, 0);
+    ledcSetup(1, 5000, 8);
+    ledcAttachPin(PIN_MOTOR_R_PWM, 1);
+#endif
 
     Serial.println("[TARS] Micromouse System Initialized.");
     delay(1000);
