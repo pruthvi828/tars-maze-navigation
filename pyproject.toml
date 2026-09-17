@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tars-mazenav"
+version = "1.0.0"
+authors = [
+  { name="Pruthvi Jadhav", email="jadhavpruthvi828@gmail.com" },
+]
+description = "Autonomous Micromouse & Grid Navigation Engine for Autonomous Robotics Competitions"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Robotics",
+]
+dependencies = [
+    "pyserial>=3.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
