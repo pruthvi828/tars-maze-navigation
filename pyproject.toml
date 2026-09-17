@@ -26,7 +26,13 @@ dev = [
     "pytest>=7.0.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tars_mazenav*"]
+exclude = ["cpp_firmware*", "tests*"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
 
