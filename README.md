@@ -1,12 +1,24 @@
-# 🏁 TARS-MazeNav: Autonomous Micromouse & Maze Solving Engine
+# 🏁 TARS-MazeNav: Autonomous Micromouse & Robotics Simulation Studio
 
+[![Live Interactive Demo](https://img.shields.io/badge/Live%20Demo-Interactive%20Studio-38bdf8?style=for-the-badge&logo=googlechrome&logoColor=white)](https://pruthvi828.github.io/tars-maze-navigation/)
 [![CI](https://github.com/pruthvi828/tars-maze-navigation/actions/workflows/ci.yml/badge.svg)](https://github.com/pruthvi828/tars-maze-navigation/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
 [![Target: ESP32 / STM32](https://img.shields.io/badge/Hardware-ESP32%20%7C%20STM32-red.svg)](#embedded-firmware)
 
-> High-performance algorithmic engine for autonomous maze exploration, dynamic flood-fill potential fields, and high-speed trajectory compression.
-> Engineered by **Team TARS** (Pruthvi Jadhav, Parth Vaishampayan, Aditi Patwa) for national robotics challenges including **IIT Bombay Techfest (MeshMerize)**, **IIT Madras Shaastra (Maze Runner)**, and **IIT Kharagpur Kshitij**.
+> High-performance algorithmic engine and interactive simulation studio for autonomous maze exploration, dynamic potential fields, and 45-degree diagonal trajectory compression.
+> Engineered by **Team TARS** (Pruthvi Jadhav, Parth Vaishampayan, Aditi Patwa) for national robotics championships including **IIT Bombay Techfest (MeshMerize)**, **IIT Madras Shaastra (Maze Runner)**, and **Flipkart GRiD Robotics**.
+
+---
+
+## 🌐 Live Interactive Studio
+
+Try the simulation directly in your browser without installation:  
+👉 **[Launch TARS-MazeNav Web Studio](https://pruthvi828.github.io/tars-maze-navigation/)**
+
+* 🎮 **60 FPS Real-Time Canvas Simulation**: Visualizes Micromouse sensor raycasting, dynamic potential heatmaps, and wall discovery.
+* ⚡ **Algorithm Comparison**: Compare Modified FloodFill vs Classical FloodFill vs A* vs 45° Diagonal Speedrun.
+* 📟 **One-Click C++ Header Exporter**: Generates flash-ready C++ `#include` headers with optimal waypoints for ESP32/STM32 microcontrollers.
 
 ---
 
@@ -16,16 +28,29 @@
   - Dynamic Manhattan potential field recalculation upon encountering unknown walls.
   - Directional momentum bias: prioritizes straight-line movement to eliminate unnecessary turns and motor deceleration.
   - Zero-loop guarantee across standard 16x16, 32x32, or arbitrary non-square mazes.
-- **🏎️ Speed-Run Trajectory Optimization (Scoring Run)**:
-  - Global graph extraction via A* with turn-cost penalties.
-  - **Trapezoidal Command Compression**: Combines consecutive linear steps into continuous acceleration bursts (`FORWARD(1) + FORWARD(1) + FORWARD(1)` ➔ `FORWARD(3)`).
+- **🏎️ 45° Diagonal Trajectory Optimization (Championship Speed Run)**:
+  - Converts orthogonal stair-step paths (`NORTH -> EAST -> NORTH -> EAST`) into continuous 45-degree diagonal bursts (`DIAGONAL_FORWARD(dist)`).
+  - Continuous curvature kinematic modeling with trapezoidal velocity profiling ($v_{\text{max}} = 3.5\text{ m/s}, a = 12.0\text{ m/s}^2$).
 - **📟 Embedded C++ Firmware (`cpp_firmware/`)**:
   - Zero-heap-allocation C++ engine with circular static memory buffer (<2KB RAM).
   - Ready to flash to **ESP32-S3, ESP32-WROOM, or STM32 Nucleo** microcontrollers.
 - **🎮 Micromouse Simulator (MMS) Interop**:
   - Full bidirectional I/O protocol bridge for [`mackorone/mms`](https://github.com/mackorone/mms).
-- **🖥️ Terminal ASCII Visualizer**:
-  - Real-time ASCII map rendering displaying walls, robot pose, and live potential fields.
+
+---
+
+## 📊 Empirical Benchmark Results (25 Randomized Mazes)
+
+| Algorithm / Phase | Avg Steps / Path | Avg Turns | Avg Scoring Time | RAM Usage |
+| :--- | :---: | :---: | :---: | :---: |
+| **Exploration (Modified FloodFill)** | 651.2 steps | 617.8 turns | N/A (Exploration) | **< 1.2 KB** |
+| **A* Optimal Shortest Path** | 43.4 cells | 15.2 turns | 6.91 s | **< 1.8 KB** |
+| **🏎️ Championship 45° Diagonal Run** | **43.4 cells** | **Smooth Curvature** | **6.86 s** | **< 1.8 KB** |
+
+Run benchmarks locally:
+```bash
+python benchmark_runner.py
+```
 
 ---
 
@@ -48,14 +73,14 @@
 │ Phase 2: Graph Extraction     │
 │ - Generate Discovered Grid    │
 │ - A* Shortest Path            │
-│ - Motor Profile Compression   │
+│ - 45° Diagonal Compression    │
 └───────────────────────────────┘
       │
       ▼
 ┌───────────────────────────────┐
-│ Phase 3: High-Speed Run       │
-│ - Smooth Trapezoidal Speed    │
-│ - Max Velocity Scoring Run    │
+│ Phase 3: Championship Run     │
+│ - Trapezoidal Acceleration    │
+│ - High-Speed Scoring Run      │
 └───────────────────────────────┘
 ```
 
@@ -77,7 +102,7 @@ python run_demo.py
 
 ### 3. Run Automated Tests
 ```bash
-pytest tests/ -v
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 ---
